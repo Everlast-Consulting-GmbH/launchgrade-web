@@ -6,7 +6,9 @@ Which stack fits which project type? Default recommendations.
 
 ## Decision matrix
 
-| Project type                        | Default              | Alternatives                      | Rationale                                                |
+If you migrate beyond plain HTML, use this matrix to pick the target stack:
+
+| Project type                        | Migration default    | Alternatives                      | Rationale                                                |
 | ---------------------------------- | -------------------- | --------------------------------- | -------------------------------------------------------- |
 | **Marketing site / landing page**  | **Astro**            | Next.js, plain HTML               | Fast, static, good SEO, minimal JS footprint             |
 | **Blog / magazine**                | **Astro**            | Hugo, WordPress, Ghost            | Content collections, MDX, build-time RSS                 |

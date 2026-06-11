@@ -12,11 +12,18 @@ Repo-Root) auf Basis von:
 
 1. `project.config.json` (Brand-Daten, Tonalität, Sprache)
 2. der gewählten Style-Direktion (Named Aesthetic aus dem Style-Picker)
-3. dem Inventar des `assets/`-Ordners
-4. dem erfassten Copy-Rohmaterial
+3. dem gewählten Motion-Tier und der Asset-Art-Direction (SKILL.md Step 5b/5c)
+4. dem Inventar des `assets/`-Ordners
+5. dem erfassten Copy-Rohmaterial
 
-Alle vier Inputs müssen vorliegen. Fehlt einer: zurück zur Material-Erfassung,
+Alle fünf Inputs müssen vorliegen. Fehlt einer: zurück zur Material-Erfassung,
 nicht improvisieren.
+
+**Grundsatz Design-first:** Diese Phase optimiert auf visuelle Klasse, nicht
+auf Compliance. Technik- und Rechts-Hardening (Self-Hosting-Swap, Metas,
+JSON-LD, CSP, Pflicht-Files) macht `/launchgrade-setup` danach als Retrofit
+ohne Pixel-Änderung. Was hier trotzdem Pflicht bleibt, ist Struktur-A11y —
+weil sie beim Schreiben des HTML nichts kostet und beim Nachrüsten teuer ist.
 
 ## Output-Konventionen
 
@@ -28,6 +35,8 @@ nicht improvisieren.
     Brand-DNA: <3-5 Adjektive die die Brand IST> | NICHT: <3-5 Adjektive>
     Named Aesthetic: <konkret, z.B. "Editorial Serif nach Mr-Porter-Vorbild">
     Style-Direktion: <Variante A/B/C aus dem Style-Picker>
+    Motion-Tier: <Static | Micro | Cinematic> · Asset-Style: <Grafik | Foto | eigenes Material>
+    Setup-TODOs: <CDN-Referenzen, die Setup self-hosten soll — oder "keine">
     Generiert: <Datum> · Master-Prompt: .claude/skills/launchgrade-design/master-prompt.md
   -->
   ```
@@ -65,8 +74,12 @@ nicht improvisieren.
 - Responsive ohne horizontalen Overflow ab 320 px Viewport-Breite —
   `min-width: 0` auf Flex-/Grid-Kindern wo nötig; das Layout bricht auf
   Mobile-Breiten nicht.
-- Fonts: self-hosted via `@font-face` aus `assets/` ODER System-Stack.
+- Fonts: self-hosted via `@font-face` aus `assets/` ODER System-Stack ODER
+  (nur im Draft) Fontshare-CDN — dann als Setup-TODO im Kommentar-Header.
   NIE `fonts.googleapis.com`.
+- Motion-Libraries (nur Tier Cinematic): GSAP + ScrollTrigger + Lenis,
+  bevorzugt self-hosted in `assets/vendor/`, im Draft auch jsdelivr-CDN
+  erlaubt (Setup-TODO notieren). Keine weiteren Dependencies.
 
 ## Anti-Slop (hart)
 
@@ -88,19 +101,61 @@ nicht improvisieren.
 - Anchor-Targets bekommen `scroll-margin-top`, falls ein Sticky-Header
   existiert — fokussierter Inhalt darf nicht verdeckt werden (WCAG 2.4.11)
 - Genau EIN `<h1>`, logische Heading-Hierarchie ohne Sprünge
-- Kontrast: Fließtext ≥ 4.5:1, Large Text / UI ≥ 3:1 — Token-Paare entsprechend wählen
+- Kontrast: Fließtext ≥ 4.5:1, Large Text / UI ≥ 3:1 anstreben — Token-Paare
+  entsprechend wählen; bewusste Brand-Abweichungen im Kommentar-Header
+  notieren, die harte Prüfung macht `/launchgrade-audit`
 - `:focus-visible`-Indicator für alle interaktiven Elemente
 - Target-Size ≥ 24×24 px
 - `prefers-reduced-motion: reduce` defensiv respektieren — Transitions und
   Animations darin deaktivieren (auch wenn der Draft kaum Motion hat)
 
-## Static-Disziplin (der Draft ist Phase 1 Static)
+## Motion-Tiers (Wahl aus SKILL.md Step 5b — im Kommentar-Header dokumentieren)
 
-- KEIN JavaScript-Motion-Layer: kein IntersectionObserver, keine Scroll-Reveals,
-  keine Spring-/Tween-Animations, keine View Transitions
-- CSS-only `:hover` / `:focus-visible`-Styles sind erlaubt
-- JS überhaupt nur, wenn funktional zwingend (z.B. Mobile-Nav-Toggle) — dann
-  minimal, inline, ohne Dependencies
+**Tier Static** — kein JS-Motion-Layer (kein IntersectionObserver, keine
+Scroll-Reveals, keine Tween-Animations). CSS-only `:hover`/`:focus-visible`
+erlaubt. JS nur wenn funktional zwingend (Mobile-Nav-Toggle), minimal, inline.
+
+**Tier Micro** — zusätzlich CSS-Transitions für Hover-/Focus-/Detail-Zustände
+und dezente CSS-Reveals. Weiterhin kein JS-Scroll-Layer.
+
+**Tier Cinematic** — volle Choreografie. Pflicht-Repertoire (nicht optional —
+ein Cinematic-Briefing mit halber Kraft zu beantworten ist der Fehlermodus):
+
+- Lenis Smooth-Scroll + GSAP ScrollTrigger; Anker-Navigation über Lenis
+- Preloader: Wortmarke mit Letter-Stagger + Prozent-Counter, übergehend in
+  eine Hero-Intro-Timeline (Media-Scale-In, Line-Masks, Fades)
+- Line-Mask-Reveals (`.line`/`.line__inner`, translateY 112% → 0) für Hero-
+  und CTA-Headlines
+- Scroll-Reveals mit Blur-Resolve (y + opacity + filter), `once: true`
+- Scrub-Parallax: Hero-Media, Bilder in Karten, Giant-Footer-Word
+- Marquee (Track mit 2× Inhalt, xPercent -50, linearer Loop)
+- Magnetic Buttons + Custom Cursor — NUR hinter `(pointer: fine) and (hover: hover)`
+- Count-Up-Stats, Glow-Drift, Grain-Overlay, Island-Nav, Bezel-Cards
+  (Double-Frame: Hairline-Shell + Innenradius), Fullscreen-Menü mit Stagger
+
+**Hard Rules für JEDES Tier:**
+
+- `prefers-reduced-motion: reduce` ⇒ Choreografie komplett aus (Early-Bail im
+  JS), Inhalt sofort sichtbar, Preloader wird entfernt oder nie angezeigt
+- Ohne JS bleibt ALLES sichtbar und bedienbar — Initial-Hidden-States nie im
+  CSS-Default, nur via `gsap.set` bzw. hinter einer per JS gesetzten
+  `html.motion`-Klasse
+- Nur `transform` / `opacity` / `filter` animieren — kein Layout-Thrashing
+
+## Asset-Art-Direction (Wahl aus SKILL.md Step 5c)
+
+- **Abstrakte Grafiken** (Default bei Tier Cinematic): Higgsfield `gpt_image_2`,
+  `--resolution 2k`, alle Jobs parallel. Gemeinsamer STYLE-Suffix pro Set, z.B.:
+  *„abstract graphic fine-art, NOT photorealistic, pure black background,
+  volumetric light, cinematic chiaroscuro, subtle film grain, <Brand-Farben
+  konkret benennen>, no text, no watermark, no letters"*. Pro Sektion ein
+  Motiv, das die Brand-Story abstrakt erzählt (Pfad, Loop, Schwelle, Aufstieg) —
+  keine Deko-Abstraktion ohne Bedeutung.
+- **Fotorealistisch**: Higgsfield `soul_location` für Orte/Szenen ohne
+  Personen. Jedes Ergebnis visuell prüfen; bei ungewollten Personen oder
+  Artefakten neu generieren, nie croppen-und-hoffen.
+- Nachbearbeitung: PNG → JPEG (`sips`, Quality ~80), echte Pixelmaße in die
+  `width`/`height`-Attribute übernehmen.
 
 ## Copy-Regeln
 
@@ -125,7 +180,10 @@ für die kein Material existiert.
 1. Datei öffnet ohne Build-Step im Browser, keine 404 auf `assets/`-Referenzen,
    kein horizontaler Overflow bei 320–1920 px (Runtime-Check im Browser)
 2. `<html lang>` gesetzt; genau ein `<h1>`; Landmarks vollständig; Skip-Link vorhanden
-3. Kein `fonts.googleapis.com`, kein CDN-Script
+3. Kein `fonts.googleapis.com`; andere CDN-Referenzen (Fontshare, jsdelivr)
+   nur im Draft erlaubt und als Setup-TODO im Kommentar-Header gelistet
+3b. Bei Motion (Tier Micro/Cinematic): reduced-motion-Bail-out vorhanden UND
+   ohne JS ist jeder Inhalt sichtbar (Check: `html.motion`-Klasse entfernen)
 4. Alle Bilder mit `width`/`height`/`alt`
 5. Token-Block vollständig — keine hardcoded Farben außerhalb von `:root`
    (gilt auch für Inline-`style=`-Attribute)

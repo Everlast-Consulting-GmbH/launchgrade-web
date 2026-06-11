@@ -55,10 +55,16 @@ nicht improvisieren.
   (Werte sind Beispiele — konkrete Werte kommen aus der gewählten
   Style-Direktion.)
 
-- `<head>`-Minimum: charset, viewport, `<title>`, `<meta name="description">`,
-  `<meta name="color-scheme">` — canonical/OG/JSON-LD ergänzt später Setup
+- `<head>`-Minimum: charset, viewport (`width=device-width, initial-scale=1` —
+  NIE `user-scalable=no` oder `maximum-scale`, bricht WCAG 1.4.4), `<title>`,
+  `<meta name="description">`, `<meta name="color-scheme">`. Bewusste Lücke:
+  canonical, OG, JSON-LD und `theme-color` ergänzt später Setup — im Draft
+  nicht vorgreifen.
 - Bilder relativ aus `assets/` (`<img src="assets/...">`), immer mit
   `width`/`height`-Attributen und sinnvollem `alt`. Nichts base64-inlinen.
+- Responsive ohne horizontalen Overflow ab 320 px Viewport-Breite —
+  `min-width: 0` auf Flex-/Grid-Kindern wo nötig; das Layout bricht auf
+  Mobile-Breiten nicht.
 - Fonts: self-hosted via `@font-face` aus `assets/` ODER System-Stack.
   NIE `fonts.googleapis.com`.
 
@@ -77,12 +83,16 @@ nicht improvisieren.
 
 - `<html lang="…">` aus `project.config.json`
 - Skip-Link `<a href="#main">` als erstes Body-Element
-- Landmarks: `<header>`, `<nav>`, `<main id="main">`, `<footer>`
+- Landmarks: `<header>`, `<nav aria-label="Hauptnavigation">`, `<main id="main">`, `<footer>`
+- Jede `<section>` hat eine Überschrift (`<h2>`/`<h3>`) oder `aria-labelledby`
+- Anchor-Targets bekommen `scroll-margin-top`, falls ein Sticky-Header
+  existiert — fokussierter Inhalt darf nicht verdeckt werden (WCAG 2.4.11)
 - Genau EIN `<h1>`, logische Heading-Hierarchie ohne Sprünge
 - Kontrast: Fließtext ≥ 4.5:1, Large Text / UI ≥ 3:1 — Token-Paare entsprechend wählen
 - `:focus-visible`-Indicator für alle interaktiven Elemente
 - Target-Size ≥ 24×24 px
-- `prefers-reduced-motion` defensiv respektieren (auch ohne Animationen)
+- `prefers-reduced-motion: reduce` defensiv respektieren — Transitions und
+  Animations darin deaktivieren (auch wenn der Draft kaum Motion hat)
 
 ## Static-Disziplin (der Draft ist Phase 1 Static)
 
@@ -106,15 +116,18 @@ nicht improvisieren.
 Sektionen aus dem Copy-Material ableiten — typisch: Hero (USP + primärer CTA),
 Leistungen/Angebot, Über uns/Trust, Social Proof (nur mit echtem Material),
 FAQ (nur mit echtem Material), Kontakt/Footer (inkl. Impressum-/Datenschutz-Links
-als Platzhalter-Anker `#impressum` / `#datenschutz`). Keine Sektion erfinden,
+als Platzhalter-Anker `#impressum` / `#datenschutz` — DE-Pflichtangaben,
+§ 5 DDG / DSGVO Art. 13, nicht optional). Keine Sektion erfinden,
 für die kein Material existiert.
 
 ## Self-Check vor Abgabe (alle Punkte prüfen, bei Fail nachbessern)
 
-1. Datei öffnet ohne Build-Step im Browser, keine 404 auf `assets/`-Referenzen
-2. Genau ein `<h1>`; Landmarks vollständig; Skip-Link vorhanden
+1. Datei öffnet ohne Build-Step im Browser, keine 404 auf `assets/`-Referenzen,
+   kein horizontaler Overflow bei 320–1920 px (Runtime-Check im Browser)
+2. `<html lang>` gesetzt; genau ein `<h1>`; Landmarks vollständig; Skip-Link vorhanden
 3. Kein `fonts.googleapis.com`, kein CDN-Script
 4. Alle Bilder mit `width`/`height`/`alt`
 5. Token-Block vollständig — keine hardcoded Farben außerhalb von `:root`
+   (gilt auch für Inline-`style=`-Attribute)
 6. Kein erfundener Fakt — alle Lücken als `{{TODO: …}}` markiert
 7. Kommentar-Header vollständig

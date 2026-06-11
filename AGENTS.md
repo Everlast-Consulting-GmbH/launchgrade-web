@@ -14,7 +14,7 @@ Runtime dependencies only appear if the user later chooses a stack migration in 
 
 When invoked in a fresh template clone (or after the user clicks GitHub's "Use this template"), follow these steps in order:
 
-1. **Detect context.** Is this a fresh clone? Check for absence of `index.html` and `project.config.json` at root.
+1. **Detect context.** Is this a fresh clone? `project.config.json` at root is the authoritative marker: absent → fresh clone. (`index.html` alone is not reliable — after the plain-HTML setup path it moves to `public/`, while `project.config.json` stays at root.)
 2. **Do nothing eagerly.** Do not install Node, do not run `npm install`, do not install global CLIs. Phase 1 needs only a browser.
 3. **Trigger `/launchgrade-design`.** That skill captures company info, references, and the `assets/` folder completely (hard gate before generation), shows 3 style directions, then generates the single-HTML draft (`index.html`) via the versioned master prompt. It also writes `project.config.json`.
 4. **Install on demand, not upfront.** Tooling appears only when a later user choice requires it:
@@ -65,10 +65,11 @@ Also in the template:
 
 - `assets/` — drop zone for brand material (logo, photos, fonts); inventoried by the design skill before generation
 - `.claude/skills/launchgrade-design/master-prompt.md` — versioned quality prompt for single-HTML generation
+- `.launchgrade/` (gitignored) — working artifacts of the skills: style-picker mockups, draft archive
 
 Not in the template (stack- or asset-specific, comes via skill or manually):
 
-- Favicons (SVG + 192/512/180 PNG) — brand asset, per project
+- Brand favicons: a placeholder `public/favicon.svg` ships with the template; the brand SVG + 192/512/180 PNGs come per project
 - CSP / security headers (`vercel.json`, `next.config.js`, nginx, Cloudflare)
 - JSON-LD Organization on the homepage
 

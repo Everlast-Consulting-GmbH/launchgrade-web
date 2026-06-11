@@ -114,6 +114,8 @@ grep -rhoE 'fetch\(["'\'']https?://[^"'\'' ]+' index.html src/ public/ 2>/dev/nu
 curl -sI <url> | grep -i content-security-policy
 ```
 
+Die Pfade decken Root-Draft (`index.html`), Plain-HTML-Publish (`public/`) und Standard-Scaffolds (`src/`, inkl. Next mit `--src-dir` → `src/app/`) ab. Bei Next-Projekten ohne `--src-dir` zusätzlich `app/` in die grep-Targets aufnehmen.
+
 Jeden gefundenen Host gegen die passende CSP-Direktive matchen: Scripts → `script-src`, iframes → `frame-src`, fetch/XHR → `connect-src`, `<img>`/Pixel-Beacons → `img-src`, Videos/HLS → `media-src`, Fonts → `font-src`. Was fehlt → Blocker (silent break in prod).
 
 **4b. Live-Console- & Network-Sweep**

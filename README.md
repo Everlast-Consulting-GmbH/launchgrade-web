@@ -23,7 +23,7 @@ The agent captures your company info, references, and assets completely (hard ga
 - **An AI agent** — [Claude Code](https://docs.claude.com/en/docs/claude-code), Codex, or Cursor
 - **Git** — or just use the GitHub template button + GitHub web editor
 
-That's it. No Node, no nvm, no global CLIs. The draft is a single HTML file that opens in any browser. Node only appears if you later choose a stack migration (Astro / Next.js / SvelteKit / Nuxt) — installed on demand by the agent.
+That's it. No Node, no nvm, no global CLIs. The draft is a single HTML file that opens in any browser. Node only appears if you later choose a stack migration (Astro / Next.js / SvelteKit / Nuxt) or want the local smoke test / Lighthouse run, installed on demand by the agent.
 
 ## What's inside
 

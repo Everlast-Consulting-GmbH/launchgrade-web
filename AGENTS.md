@@ -45,7 +45,7 @@ Two rules hold the workflow together:
 
 ## When does what trigger
 
-- **New website, draft, design, copy, "looks generic", brand refactor** → `launchgrade-design`
+- **New website, new page, draft, design, copy, "looks generic", brand refactor** → `launchgrade-design`
 - **"Bring into shape", go live, stack choice/migration, robots.txt, CSP, manifest, security.txt, favicons, deploy** → `launchgrade-setup`
 - **URL given + "audit" / "Lighthouse" / "pre-launch"** → `launchgrade-audit`
 

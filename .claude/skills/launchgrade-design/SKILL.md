@@ -141,7 +141,9 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    → `mcp__claude-in-chrome__tabs_create_mcp` mit `file://`-URL → Fallback:
    absoluten Pfad ausgeben. User verfeinert im Dialog („Hero größer", „andere
    Fotos") — der Skill iteriert auf der `index.html`. Master-Prompt-Constraints
-   gelten in jeder Iteration.
+   gelten in jeder Iteration. Wurde das Projekt schon mit `/launchgrade-setup`
+   in Form gebracht (Datei liegt unter `public/index.html`, Root-`index.html`
+   existiert nicht), dort iterieren — KEINE zweite Root-Datei anlegen.
 
 8. **Hard Gate vor Übergabe — `AskUserQuestion`, PFLICHT:**
 
@@ -191,5 +193,9 @@ Standards-Lookup: `./web-standards/AGENTS.md` im Repo (§1 HTML-Baseline, §3 A1
 - `project.config.json` mit Brand-Teil gefüllt, Technik-Felder `null`.
 - `assets/` referenziert, Style-Picker bleibt unter `.launchgrade/mockups/`
   liegen (gitignored, visuelle Ground-Truth der Wahl).
+- Micro-Interactions und Motion-Layer sind bewusst nicht Teil des Drafts.
+  Reihenfolge nach Freigabe: Static → Micro (Hover/Focus/Form-States) →
+  Motion (Scroll/Reveals), `prefers-reduced-motion`-Fallback Pflicht
+  (web-standards §9).
 - Nächste Phase: `/launchgrade-setup` (Pflicht-Files, Stack-Wahl, CSP) —
   optional, wenn die Seite produktiv werden soll. Danach `/launchgrade-audit`.

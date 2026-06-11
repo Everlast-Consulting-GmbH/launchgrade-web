@@ -114,7 +114,7 @@ grep -rhoE 'fetch\(["'\'']https?://[^"'\'' ]+' index.html src/ public/ 2>/dev/nu
 curl -sI <url> | grep -i content-security-policy
 ```
 
-Die Pfade decken Root-Draft (`index.html`), Plain-HTML-Publish (`public/`) und Standard-Scaffolds (`src/`, inkl. Next mit `--src-dir` → `src/app/`) ab. Bei Next-Projekten ohne `--src-dir` zusätzlich `app/` in die grep-Targets aufnehmen.
+Die Pfade decken Root-Draft (`index.html`), Plain-HTML-Publish (`public/`) und Standard-Scaffolds (`src/`, inkl. Next mit `--src-dir` → `src/app/`) ab. Bei Next-Projekten ohne `--src-dir` zusätzlich `app/`, bei Nuxt zusätzlich `components/ layouts/ pages/` in die grep-Targets aufnehmen.
 
 Jeden gefundenen Host gegen die passende CSP-Direktive matchen: Scripts → `script-src`, iframes → `frame-src`, fetch/XHR → `connect-src`, `<img>`/Pixel-Beacons → `img-src`, Videos/HLS → `media-src`, Fonts → `font-src`. Was fehlt → Blocker (silent break in prod).
 
@@ -141,7 +141,9 @@ Verifizieren via tatsächlicher URL/State-Change, nicht via Screenshot allein (B
 
 1. **Kontext klären:**
    - URL (vollständig mit Protokoll)
-   - Geltungsbereich: BFSG-relevant (B2C-Shop / Banking / Buchung)?
+   - Geltungsbereich: BFSG-relevant (B2C-Shop / Banking / Buchung)? Zuerst
+     `bfsg_relevant` aus `project.config.json` lesen — nur fragen, wenn das
+     Feld fehlt oder `null` ist.
    - Single-Page-Check oder Multi-Page (mehrere URLs nacheinander)?
 
 2. **AGENTS.md §2–§6 + `checklist.md` lesen.**

@@ -49,11 +49,16 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
 1. **Voraussetzungs-Check (Bash):**
 
    ```bash
-   [ -f index.html ] && [ -f project.config.json ] && echo "DRAFT_PRESENT" || echo "DRAFT_MISSING"
+   if [ -f index.html ] && [ -f project.config.json ]; then echo "DRAFT_PRESENT"
+   elif [ -f public/index.html ] && [ -f project.config.json ]; then echo "ALREADY_SHAPED"
+   else echo "DRAFT_MISSING"; fi
    ```
 
-   Bei `DRAFT_MISSING`: abbrechen mit Hinweis *„erst `/launchgrade-design`
-   ausführen"* — kein Blind-Scaffold auf leerem Repo. Ausnahme Bestandsprojekt:
+   Bei `ALREADY_SHAPED`: Setup lief bereits (Plain-HTML-Pfad) — nur fehlende
+   Teile ergänzen (Header-Config, Favicons, offene Platzhalter), nichts erneut
+   verschieben. Bei `DRAFT_MISSING`: abbrechen mit Hinweis *„erst
+   `/launchgrade-design` ausführen"* — kein Blind-Scaffold auf leerem Repo.
+   Ausnahme Bestandsprojekt:
    existiert bereits eine produktive Site ohne Draft, das explizit machen und
    nur den Pflicht-File-/Header-Teil fahren.
 
@@ -87,13 +92,16 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
 4. **Pfad A — Plain HTML (Default):**
 
    a) Draft ins Publish-Dir verschieben — exakt:
-      `git mv index.html public/index.html && git mv assets public/assets`.
-      `public/` ist das Publish-Dir, dort liegen die Pflicht-Files bereits.
-      Relative `assets/…`-Referenzen bleiben gültig, weil beide zusammen
-      umziehen.
+      `rm assets/README.md && git add index.html assets && git mv index.html public/index.html && git mv assets public/assets`
+      (das `git add` zuerst — der Draft ist meist noch untracked, `git mv`
+      bricht sonst mit „not under version control" ab; die Template-Anleitung
+      `assets/README.md` gehört nicht auf die Live-Site). `public/` ist das
+      Publish-Dir, dort liegen die Pflicht-Files bereits. Relative
+      `assets/…`-Referenzen bleiben gültig, weil beide zusammen umziehen.
    b) `<head>` vervollständigen (Design-Treue: nichts Sichtbares ändern):
       canonical, Open Graph, Twitter Card, `theme-color` (= `primary_color.hex`
-      aus `project.config.json`), Favicon-Links, JSON-LD `Organization` +
+      aus `project.config.json`), bei Mehrsprachigkeit `<link rel="alternate"
+      hreflang>`-Paare aus Step 2, Favicon-Links, JSON-LD `Organization` +
       `WebSite` als `<script type="application/ld+json">`.
    c) Pflicht-File-Platzhalter via `Edit` füllen: `public/robots.txt`,
       `public/sitemap.xml`, `public/llms.txt`, `public/site.webmanifest`,
@@ -107,9 +115,10 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
       `_headers` für Cloudflare Pages / nginx-Block / Apache `.htaccess`):
       CSP Level 3, HSTS, X-Content-Type-Options, Referrer-Policy,
       Permissions-Policy, `frame-ancestors 'self'` + Allowlist falls Embeds.
-   e) Favicon-Set: vorhandenes `public/favicon.svg` auf Brand prüfen; PNGs
-      (192/512/180) aus Logo in `assets/` ableiten oder RealFaviconGenerator
-      empfehlen.
+   e) Favicon-Set: vorhandenes `public/favicon.svg` auf Brand prüfen und den
+      `{{BRAND_INITIAL}}`-Token ersetzen (oder Datei durch Brand-SVG ersetzen);
+      PNGs (192/512/180) aus Logo in `assets/` ableiten oder
+      RealFaviconGenerator empfehlen.
 
 5. **Pfad B — Migration (Astro / Next / SvelteKit / Nuxt):**
 
@@ -142,7 +151,8 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
 
    d) **Token-Block** aus dem Draft-`:root` nach `src/styles/tokens.css`
       verschieben (Nuxt: `assets/styles/tokens.css`), global einbinden.
-      `assets/` → `public/assets/` verschieben, Referenzen anpassen.
+      `assets/` → `public/assets/` verschieben (`assets/README.md` dabei
+      löschen — Template-Anleitung), Referenzen anpassen.
    e) Root-`index.html` löschen (archiviert in `.launchgrade/draft.html`).
    f) `<head>`-Metas, Pflicht-File-Platzhalter, Header-Config, Favicons wie
       Pfad A Schritte b–e (stack-spezifisch: Next `next.config.js`-Headers,

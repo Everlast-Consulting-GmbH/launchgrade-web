@@ -10,7 +10,7 @@ If you migrate beyond plain HTML, use this matrix to pick the target stack:
 
 | Project type                        | Migration default    | Alternatives                      | Rationale                                                |
 | ---------------------------------- | -------------------- | --------------------------------- | -------------------------------------------------------- |
-| **Marketing site / landing page**  | **Astro**            | Next.js, plain HTML               | Fast, static, good SEO, minimal JS footprint             |
+| **Marketing site / landing page**  | **Astro**            | Next.js                           | Fast, static, good SEO, minimal JS footprint             |
 | **Blog / magazine**                | **Astro**            | Hugo, WordPress, Ghost            | Content collections, MDX, build-time RSS                 |
 | **Online shop (small/medium)**     | **Shopify**          | Medusa (custom), WooCommerce      | Out-of-the-box BFSG path easier, low maintenance load    |
 | **Online shop (custom, headless)** | **Next.js + Medusa** | Astro + Snipcart, Remix + Shopify | When logic is custom or brand-heavy                      |

@@ -60,6 +60,9 @@ coverage/
 /tmp/axe-*.json
 audit-reports/
 
+# Launchgrade working artifacts (style picker, draft archive)
+.launchgrade/
+
 # Misc
 .turbo/
 .vercel/

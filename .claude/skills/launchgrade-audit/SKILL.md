@@ -104,15 +104,17 @@ Pro Repo grep'pen und gegen die ausgelieferte CSP matchen:
 
 ```bash
 # Externe Script-Hosts die der Code injiziert
-grep -rhoE '(<script[^>]*src=|[Ss]cript[[:space:]]+src=|createElement\("script"\)[[:space:]]*[^;]*src[[:space:]]*=)[^"'\'']*["'\''][^"'\'' ]+' src/ \
+grep -rhoE '(<script[^>]*src=|[Ss]cript[[:space:]]+src=|createElement\("script"\)[[:space:]]*[^;]*src[[:space:]]*=)[^"'\'']*["'\''][^"'\'' ]+' index.html src/ public/ 2>/dev/null \
   | grep -oE 'https?://[^"'\'' ]+' | sort -u
 # Externe iframe-Hosts
-grep -rhoE '<iframe[^>]*src=["'\''][^"'\'' ]+' src/ | grep -oE 'https?://[^"'\'' ]+' | sort -u
+grep -rhoE '<iframe[^>]*src=["'\''][^"'\'' ]+' index.html src/ public/ 2>/dev/null | grep -oE 'https?://[^"'\'' ]+' | sort -u
 # Externe fetch-/XHR-Ziele
-grep -rhoE 'fetch\(["'\'']https?://[^"'\'' ]+' src/ | grep -oE 'https?://[^"'\'' ]+' | sort -u
+grep -rhoE 'fetch\(["'\'']https?://[^"'\'' ]+' index.html src/ public/ 2>/dev/null | grep -oE 'https?://[^"'\'' ]+' | sort -u
 # Aktuell ausgelieferte CSP (gegen URL)
 curl -sI <url> | grep -i content-security-policy
 ```
+
+Die Pfade decken Root-Draft (`index.html`), Plain-HTML-Publish (`public/`) und Standard-Scaffolds (`src/`, inkl. Next mit `--src-dir` → `src/app/`) ab. Bei Next-Projekten ohne `--src-dir` zusätzlich `app/`, bei Nuxt zusätzlich `components/ layouts/ pages/` in die grep-Targets aufnehmen.
 
 Jeden gefundenen Host gegen die passende CSP-Direktive matchen: Scripts → `script-src`, iframes → `frame-src`, fetch/XHR → `connect-src`, `<img>`/Pixel-Beacons → `img-src`, Videos/HLS → `media-src`, Fonts → `font-src`. Was fehlt → Blocker (silent break in prod).
 
@@ -139,7 +141,9 @@ Verifizieren via tatsächlicher URL/State-Change, nicht via Screenshot allein (B
 
 1. **Kontext klären:**
    - URL (vollständig mit Protokoll)
-   - Geltungsbereich: BFSG-relevant (B2C-Shop / Banking / Buchung)?
+   - Geltungsbereich: BFSG-relevant (B2C-Shop / Banking / Buchung)? Zuerst
+     `bfsg_relevant` aus `project.config.json` lesen — nur fragen, wenn das
+     Feld fehlt oder `null` ist.
    - Single-Page-Check oder Multi-Page (mehrere URLs nacheinander)?
 
 2. **AGENTS.md §2–§6 + `checklist.md` lesen.**
@@ -199,7 +203,7 @@ Verifizieren via tatsächlicher URL/State-Change, nicht via Screenshot allein (B
 ## Übergabe
 
 - Wenn Audit grün: Site ist **technisch** ready.
-- Design-Qualität bleibt manueller Check via **`launchgrade-design`** (DESIGN.md vs. Output).
+- Design-Qualität bleibt manueller Check via **`launchgrade-design`** (Single-HTML-Draft als Ground-Truth vs. Live-Output).
 - Bei Bestandsmigration: Mid-/Long-Term-Roadmap aus AGENTS.md §11 als Folge-Plan vorschlagen.
 
 ## Aktualität

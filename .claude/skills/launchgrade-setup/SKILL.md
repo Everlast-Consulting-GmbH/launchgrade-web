@@ -70,6 +70,9 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
 3. **Stack-Wahl per `AskUserQuestion`** — der Draft existiert bereits als
    HTML, deshalb ist Plain HTML der Default:
 
+   - Question: *„Wie soll die Seite produktiv werden?"*
+   - Options: *Plain HTML (Default)* · *Astro* · *Next.js* · *SvelteKit / Nuxt*
+
    | Stack | Wann nehmen |
    |---|---|
    | **Plain HTML** (Default) | Draft IST die Website. One-Pager / Landing Page ohne App-Logik. Form-Service (Formspree, Resend) reicht. Null Toolchain. |
@@ -83,9 +86,11 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
 
 4. **Pfad A — Plain HTML (Default):**
 
-   a) `index.html` + `assets/` nach `public/` verschieben (`git mv`) —
+   a) Draft ins Publish-Dir verschieben — exakt:
+      `git mv index.html public/index.html && git mv assets public/assets`.
       `public/` ist das Publish-Dir, dort liegen die Pflicht-Files bereits.
-      Relative `assets/…`-Referenzen bleiben gültig.
+      Relative `assets/…`-Referenzen bleiben gültig, weil beide zusammen
+      umziehen.
    b) `<head>` vervollständigen (Design-Treue: nichts Sichtbares ändern):
       canonical, Open Graph, Twitter Card, `theme-color` (= `primary_color.hex`
       aus `project.config.json`), Favicon-Links, JSON-LD `Organization` +
@@ -94,8 +99,10 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
       `public/sitemap.xml`, `public/llms.txt`, `public/site.webmanifest`,
       `public/.well-known/security.txt`, `public/404.html`, `public/500.html`,
       `SECURITY.md` — Tokens: `{{BRAND_NAME}}`, `{{BRAND_TAGLINE}}`,
-      `{{DOMAIN}}`, `{{LANG}}`, `{{BRAND_PRIMARY}}`, `{{CONTACT_EMAIL}}`,
-      `{{SECURITY_EMAIL}}`, `{{SECURITY_EXPIRES}}` (12 Monate ab heute, ISO 8601).
+      `{{DOMAIN}}`, `{{LANG}}`, `{{BRAND_PRIMARY}}` (= `primary_color.hex`
+      aus `project.config.json`), `{{CONTACT_EMAIL}}`, `{{SECURITY_EMAIL}}`,
+      `{{SECURITY_EXPIRES}}` (12 Monate ab heute, ISO 8601). Übrige Werte
+      kommen aus `project.config.json` + Step 2 — nichts erfinden.
    d) Security-Header-Config je Deploy-Ziel schreiben (`vercel.json` /
       `_headers` für Cloudflare Pages / nginx-Block / Apache `.htaccess`):
       CSP Level 3, HSTS, X-Content-Type-Options, Referrer-Policy,
@@ -114,11 +121,13 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
    | **Astro** | `npm create astro@latest . -- --template minimal --typescript strict --install --git --skip-houston --yes` |
    | **Next.js** | `npx create-next-app@latest . --typescript --tailwind --app --src-dir --import-alias "@/*" --use-npm --eslint --yes` |
    | **SvelteKit** | `npx sv create . --template minimal --types ts --no-add-ons --install npm` |
-   | **Nuxt** | `npx nuxi@latest init . --packageManager npm --gitInit --force` |
+   | **Nuxt** | `npx nuxi@latest init . --packageManager npm --no-gitInit --force` |
 
-   Konflikt-Handling: Scaffold läuft in nicht-leerem Dir — Meldungen zu
-   existierenden Files ignorieren, Pflicht-Files werden danach sowieso
-   gefüllt. Bei harten Fehlern (npm-Crash, Berechtigung): abbrechen, Fix
+   CLI-Flags ändern sich mit Releases — bei Fehlern zuerst
+   `npm create astro@latest -- --help` (bzw. Stack-Pendant) prüfen und den
+   Befehl anpassen. Konflikt-Handling: Scaffold läuft in nicht-leerem Dir —
+   Meldungen zu existierenden Files ignorieren, Pflicht-Files werden danach
+   sowieso gefüllt. Bei harten Fehlern (npm-Crash, Berechtigung): abbrechen, Fix
    vorschlagen. Nach dem Scaffold mit `ls` verifizieren, dass `package.json`
    + Framework-Config existieren. Falls kein Node 20+: Platform erkennen,
    einfachsten Installer empfehlen (`fnm`, `volta` — nicht `nvm` als Pflicht).
@@ -132,8 +141,8 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
    - **Nuxt:** `components/<Section>.vue` + `layouts/default.vue` + `pages/index.vue`
 
    d) **Token-Block** aus dem Draft-`:root` nach `src/styles/tokens.css`
-      (bzw. Stack-Pendant) verschieben, global einbinden. `assets/` →
-      `public/assets/` verschieben, Referenzen anpassen.
+      verschieben (Nuxt: `assets/styles/tokens.css`), global einbinden.
+      `assets/` → `public/assets/` verschieben, Referenzen anpassen.
    e) Root-`index.html` löschen (archiviert in `.launchgrade/draft.html`).
    f) `<head>`-Metas, Pflicht-File-Platzhalter, Header-Config, Favicons wie
       Pfad A Schritte b–e (stack-spezifisch: Next `next.config.js`-Headers,
@@ -148,15 +157,29 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
 
 7. **Smoke-Test:**
 
-   a) Server im Hintergrund starten:
+   a) Vorab Port prüfen: `portmon --json` (falls installiert, sonst
+      `lsof -i :<port>`) — ist der Zielport belegt, anderen Port wählen oder
+      den belegenden Prozess nur nach User-Rückfrage beenden. Dann Server im
+      Hintergrund starten:
       - Plain HTML: `npx serve public -p 8080`
       - Astro: `npm run dev` → 4321 · Next/Nuxt: `npm run dev` → 3000 · SvelteKit: `npm run dev` → 5173
 
-      Bash mit `run_in_background: true`, 3–5 s warten.
+      Bash mit `run_in_background: true`, 3–5 s warten. `<port>` in den
+      folgenden Checks = der hier tatsächlich verwendete Port.
 
-   b) DOM-Check auf `http://localhost:<port>/`: `<title>` enthält Brand-Name,
-      `<meta name="theme-color">` = `primary_color.hex`, `<html lang>` gesetzt,
-      genau 1 `<h1>`.
+   b) DOM-Check auf `http://localhost:<port>/` — für statisches HTML per curl:
+
+      ```bash
+      HTML=$(curl -s "http://localhost:<port>/")
+      echo "$HTML" | grep -c "<h1"                      # erwartet: 1
+      echo "$HTML" | grep -o '<html[^>]*lang="[^"]*"'   # lang gesetzt
+      echo "$HTML" | grep -o '<title>[^<]*</title>'     # enthält Brand-Name
+      echo "$HTML" | grep -o 'name="theme-color"[^>]*'  # = primary_color.hex
+      ```
+
+      Bei Framework-Builds (Next/Nuxt, client-gerenderte Anteile) statt curl
+      den realen Browser nehmen — Tool-Detection: `agent-browser` → Chrome MCP
+      → Playwright → manuell.
 
    c) Pflicht-Files via curl:
 
@@ -169,7 +192,8 @@ laden. Nicht aus dem Gedächtnis arbeiten — Standards können sich ändern.
       Plus inhaltlich: `robots.txt` enthält `GPTBot`, `security.txt`
       `Expires` ≥ heute, `site.webmanifest` `theme_color` === `primary_color.hex`.
 
-   d) Server killen — keine Zombie-Prozesse.
+   d) Server killen — gezielt per PID des Hintergrundprozesses oder
+      `kill $(lsof -ti :<port>)`. Kein pauschales `pkill node`.
 
    Bei Fail: Skill bricht nicht ab — konkreter Fehler kommt als Aufgabe in
    den Output.

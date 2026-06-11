@@ -150,8 +150,9 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    - Question: *„Draft freigegeben — weiter zu /launchgrade-setup (in Form bringen)?"*
    - Options: *Ja, Setup starten* · *Nein, weiter iterieren* · *Komplett neue Direktion* (zurück zu Step 4)
 
-   Bei „Komplett neue Direktion": vorher `style_direction` und `primary_color`
-   in `project.config.json` auf `null` zurücksetzen — die alte Wahl gilt nicht
+   Bei „Komplett neue Direktion": vorher in `project.config.json`
+   `style_direction` auf `null` und `primary_color` auf
+   `{ "hex": null, "oklch": null }` zurücksetzen — die alte Wahl gilt nicht
    weiter. Bei „Ja" Setup nicht selbst auslösen — User triggert `/launchgrade-setup`.
 
 Standards-Lookup: `./web-standards/AGENTS.md` im Repo (§1 HTML-Baseline, §3 A11y).

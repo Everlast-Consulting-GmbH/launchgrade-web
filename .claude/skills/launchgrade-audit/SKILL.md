@@ -104,12 +104,12 @@ Pro Repo grep'pen und gegen die ausgelieferte CSP matchen:
 
 ```bash
 # Externe Script-Hosts die der Code injiziert
-grep -rhoE '(<script[^>]*src=|[Ss]cript[[:space:]]+src=|createElement\("script"\)[[:space:]]*[^;]*src[[:space:]]*=)[^"'\'']*["'\''][^"'\'' ]+' src/ \
+grep -rhoE '(<script[^>]*src=|[Ss]cript[[:space:]]+src=|createElement\("script"\)[[:space:]]*[^;]*src[[:space:]]*=)[^"'\'']*["'\''][^"'\'' ]+' index.html src/ public/ 2>/dev/null \
   | grep -oE 'https?://[^"'\'' ]+' | sort -u
 # Externe iframe-Hosts
-grep -rhoE '<iframe[^>]*src=["'\''][^"'\'' ]+' src/ | grep -oE 'https?://[^"'\'' ]+' | sort -u
+grep -rhoE '<iframe[^>]*src=["'\''][^"'\'' ]+' index.html src/ public/ 2>/dev/null | grep -oE 'https?://[^"'\'' ]+' | sort -u
 # Externe fetch-/XHR-Ziele
-grep -rhoE 'fetch\(["'\'']https?://[^"'\'' ]+' src/ | grep -oE 'https?://[^"'\'' ]+' | sort -u
+grep -rhoE 'fetch\(["'\'']https?://[^"'\'' ]+' index.html src/ public/ 2>/dev/null | grep -oE 'https?://[^"'\'' ]+' | sort -u
 # Aktuell ausgelieferte CSP (gegen URL)
 curl -sI <url> | grep -i content-security-policy
 ```
@@ -199,7 +199,7 @@ Verifizieren via tatsächlicher URL/State-Change, nicht via Screenshot allein (B
 ## Übergabe
 
 - Wenn Audit grün: Site ist **technisch** ready.
-- Design-Qualität bleibt manueller Check via **`launchgrade-design`** (DESIGN.md vs. Output).
+- Design-Qualität bleibt manueller Check via **`launchgrade-design`** (Single-HTML-Draft als Ground-Truth vs. Live-Output).
 - Bei Bestandsmigration: Mid-/Long-Term-Roadmap aus AGENTS.md §11 als Folge-Plan vorschlagen.
 
 ## Aktualität

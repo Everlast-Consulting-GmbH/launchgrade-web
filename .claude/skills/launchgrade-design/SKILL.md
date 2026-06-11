@@ -76,7 +76,7 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
      "contact": { "email": null, "phone": null, "address": null },
      "tonality": "…",
      "lang": "de",
-     "primary_color": null,
+     "primary_color": { "hex": null, "oklch": null },
      "style_direction": null,
      "domain": null,
      "bfsg_relevant": null,
@@ -86,9 +86,11 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    }
    ```
 
-   `primary_color` + `style_direction` werden nach der Style-Wahl (Step 5)
-   nachgetragen. `domain`, `bfsg_relevant`, `stack`, `deploy_target` füllt
-   Setup. Nicht erfasste Kontaktfelder bleiben `null` — nie erfinden.
+   `primary_color.hex` + `primary_color.oklch` + `style_direction` werden nach
+   der Style-Wahl (Step 5) nachgetragen. `domain`, `bfsg_relevant`, `stack`,
+   `deploy_target` füllt Setup. Nicht erfasste Kontaktfelder bleiben `null` —
+   nie erfinden. `standards_snapshot` mit dem echten Datei-Inhalt füllen
+   (`cat web-standards/.snapshot-version`), nicht den Platzhalter übernehmen.
 
 4. **Style-Picker generieren:** 3 distinkte Style-Direktionen — klar polar,
    nicht 3× Variationen derselben Idee. Jede mit konkreter Named Aesthetic,
@@ -115,26 +117,31 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    2. `mcp__claude-in-chrome__tabs_create_mcp` mit `file://`-URL
    3. Fallback: absoluten Pfad zum manuellen Öffnen ausgeben
 
+   Vorher sicherstellen, dass `.launchgrade/` gitignored ist:
+   `grep -q '^\.launchgrade/' .gitignore 2>/dev/null || echo '.launchgrade/' >> .gitignore`
+
 5. **Auswahl per `AskUserQuestion`** — PFLICHT, keine nummerierte Chat-Liste:
 
    - Question: *„Welche Style-Direktion?"*
    - Options: *Variante A* · *Variante B* · *Variante C* · *Kombi (ich beschreibe selbst)*
    - Bei „Kombi" Nachfass: *„Was kombinieren?"* (z.B. „Typo aus B, Palette aus C")
 
-   Danach `primary_color` (Hex + OKLCH) und `style_direction` (Named Aesthetic)
-   in `project.config.json` nachtragen.
+   Danach `primary_color.hex` + `primary_color.oklch` und `style_direction`
+   (Named Aesthetic) in `project.config.json` nachtragen.
 
 6. **Single HTML bauen — Master-Prompt ist Pflicht:**
 
    `.claude/skills/launchgrade-design/master-prompt.md` mit `Read` laden und
-   ALLE Constraints daraus anwenden (Anti-Slop, A11y, Static-Disziplin,
-   Self-Contained-Regeln, Copy-Regeln, Self-Check). Nie aus dem Gedächtnis.
+   ALLE Constraints daraus anwenden (Output-Konventionen, Anti-Slop, A11y,
+   Static-Disziplin, Copy-Regeln, Self-Check). Nie aus dem Gedächtnis.
    Output: `index.html` im Repo-Root.
 
 7. **Browser-Sichtprüfung + Iteration:** `index.html` nach jedem Build im
-   Browser öffnen (gleiche Tool-Detection wie Step 4). User verfeinert im
-   Dialog („Hero größer", „andere Fotos") — der Skill iteriert auf der
-   `index.html`. Master-Prompt-Constraints gelten in jeder Iteration.
+   Browser öffnen — Tool-Detection-Reihenfolge: `agent-browser open index.html`
+   → `mcp__claude-in-chrome__tabs_create_mcp` mit `file://`-URL → Fallback:
+   absoluten Pfad ausgeben. User verfeinert im Dialog („Hero größer", „andere
+   Fotos") — der Skill iteriert auf der `index.html`. Master-Prompt-Constraints
+   gelten in jeder Iteration.
 
 8. **Hard Gate vor Übergabe — `AskUserQuestion`, PFLICHT:**
 
@@ -143,7 +150,9 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    - Question: *„Draft freigegeben — weiter zu /launchgrade-setup (in Form bringen)?"*
    - Options: *Ja, Setup starten* · *Nein, weiter iterieren* · *Komplett neue Direktion* (zurück zu Step 4)
 
-   Bei „Ja" Setup nicht selbst auslösen — User triggert `/launchgrade-setup`.
+   Bei „Komplett neue Direktion": vorher `style_direction` und `primary_color`
+   in `project.config.json` auf `null` zurücksetzen — die alte Wahl gilt nicht
+   weiter. Bei „Ja" Setup nicht selbst auslösen — User triggert `/launchgrade-setup`.
 
 Standards-Lookup: `./web-standards/AGENTS.md` im Repo (§1 HTML-Baseline, §3 A11y).
 

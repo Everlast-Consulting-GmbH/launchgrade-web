@@ -33,7 +33,7 @@ That's it. No Node, no nvm, no global CLIs. The draft is a single HTML file that
   - `launchgrade-setup` — phase 2 (optional): brings the approved draft into production shape — stack choice (plain HTML default, or migration with visual parity check), required files, CSP, head metas, JSON-LD. Never changes content or look.
   - `launchgrade-audit` — phase 3: pre-/post-launch via PageSpeed Insights + Mozilla Observatory (web-based, zero install); Lighthouse CLI optional
 - **Asset drop zone** (`assets/`) — logo, photos, fonts; inventoried before generation
-- **Required files** in `public/` with `{{PLACEHOLDER}}` tokens (robots.txt, sitemap.xml, llms.txt, security.txt, site.webmanifest, 404/500)
+- **Required files** in `public/` with `{{PLACEHOLDER}}` tokens (robots.txt, sitemap.xml, llms.txt, .well-known/security.txt, site.webmanifest, 404/500)
 - **Claude Code settings** (`.claude/settings.json`) — permission allowlist for audit tooling, deny rules against force push and publish
 
 ## Workflow
@@ -58,7 +58,7 @@ These files are self-contained — you don't need the template or the skills to 
 
 - Framework-specific code (Next.js, Astro, SvelteKit) — the setup skill scaffolds a stack on demand, only if you choose migration
 - `index.html` / `project.config.json` — per project via `launchgrade-design`
-- Favicons as PNG/ICO — brand asset, per project
+- Brand favicons — a placeholder `public/favicon.svg` ships with the template; brand SVG + PNGs (192/512/180) come per project
 - CI/CD setup — intentionally omitted for solo / small-team repos
 - `package.json` at root — there's nothing to install; a migrated stack adds its own
 

@@ -6,19 +6,19 @@ The technical web baseline lives in `./web-standards/AGENTS.md` (snapshot of the
 
 ## What this template needs to run
 
-**Nothing.** The template itself is static files (`public/*`), docs (`AGENTS.md`, `web-standards/`), and Claude Code skills. There is no build step, no install step, no runtime.
+**Nothing.** The template itself is static files (`public/*`), an asset drop zone (`assets/`), docs (`AGENTS.md`, `web-standards/`), and Claude Code skills. There is no build step, no install step, no runtime. Phase 1 produces a single HTML file that opens in any browser.
 
-Runtime dependencies only appear once the user makes a downstream choice — and the agent handles them then, not upfront.
+Runtime dependencies only appear if the user later chooses a stack migration in phase 2 — and the agent handles them then, not upfront.
 
 ## Bootstrap (read this first on a fresh clone)
 
 When invoked in a fresh template clone (or after the user clicks GitHub's "Use this template"), follow these steps in order:
 
-1. **Detect context.** Is this a fresh clone (no chosen stack yet)? Check for absence of `astro.config.*`, `next.config.*`, `svelte.config.*`, `nuxt.config.*`, `package.json` at root.
-2. **Do nothing eagerly.** Do not install Node, do not run `npm install`, do not install global CLIs. The user may never need them.
-3. **Trigger `/launchgrade-setup`.** That skill asks for stack, brand, domain, BFSG relevance, then scaffolds the chosen stack (if any) and fills `{{PLACEHOLDER}}` tokens in `public/*` and `SECURITY.md`.
-4. **Install on demand, not upfront.** If and when a user choice requires tooling, install it then with a clear explanation:
-   - Picks Astro / Next / SvelteKit / Nuxt → Node 20+ required for scaffold. If no Node, detect platform and recommend the simplest installer (`fnm`, `volta`, or system installer — not `nvm` as a hard requirement).
+1. **Detect context.** Is this a fresh clone? Check for absence of `index.html` and `project.config.json` at root.
+2. **Do nothing eagerly.** Do not install Node, do not run `npm install`, do not install global CLIs. Phase 1 needs only a browser.
+3. **Trigger `/launchgrade-design`.** That skill captures company info, references, and the `assets/` folder completely (hard gate before generation), shows 3 style directions, then generates the single-HTML draft (`index.html`) via the versioned master prompt. It also writes `project.config.json`.
+4. **Install on demand, not upfront.** Tooling appears only when a later user choice requires it:
+   - Picks a stack migration in `/launchgrade-setup` (Astro / Next / SvelteKit / Nuxt) → Node 20+ required for scaffold. If no Node, detect platform and recommend the simplest installer (`fnm`, `volta`, or system installer — not `nvm` as a hard requirement).
    - Wants local Lighthouse audit → use `npx lighthouse` (no global install needed).
    - BFSG-relevant + wants local a11y CLI → `npx @axe-core/cli`.
    - Otherwise audit runs against the live URL via PageSpeed Insights API + Mozilla Observatory (both web-based, no install).
@@ -26,16 +26,27 @@ When invoked in a fresh template clone (or after the user clicks GitHub's "Use t
 ## Workflow (three phases, three skills)
 
 ```
-1. /launchgrade-setup    →  context capture, optional stack scaffold, required files + stack-specific configs (CSP, headers, JSON-LD)
-2. /launchgrade-design   →  style direction (3 variants → user picks), DESIGN.md + optional COPY.md template, audit gate. User builds the site themselves between DESIGN.md and the audit gate.
-3. Build (user-driven, static → micro-interactions → motion in this order)
-4. /launchgrade-audit    →  before every release (PageSpeed Insights + Mozilla Observatory; Lighthouse CLI optional)
+1. /launchgrade-design   →  capture material completely (hard gate) → 3 style
+                            directions (user picks) → single-HTML draft
+                            (index.html) via versioned master prompt
+                            + project.config.json
+2. /launchgrade-setup    →  optional "bring into shape": stack choice (plain
+                            HTML default, or migration to Astro/Next/SvelteKit/
+                            Nuxt with visual parity check), required files,
+                            CSP/headers, head metas, JSON-LD
+3. /launchgrade-audit    →  before every release (PageSpeed Insights + Mozilla
+                            Observatory; Lighthouse CLI optional)
 ```
+
+Two rules hold the workflow together:
+
+- **The single HTML is the design truth.** There is no DESIGN.md or COPY.md — the `:root` token block and the comment header inside `index.html` carry brand DNA, palette, and typography.
+- **Setup never changes content or look** (design fidelity). Design/copy changes always go back through `/launchgrade-design`.
 
 ## When does what trigger
 
-- **New page, robots.txt, CSP, manifest, security.txt** → `launchgrade-setup`
-- **DESIGN.md, COPY.md, "looks generic", brand refactor** → `launchgrade-design`
+- **New website, draft, design, copy, "looks generic", brand refactor** → `launchgrade-design`
+- **"Bring into shape", go live, stack choice/migration, robots.txt, CSP, manifest, security.txt, favicons, deploy** → `launchgrade-setup`
 - **URL given + "audit" / "Lighthouse" / "pre-launch"** → `launchgrade-audit`
 
 ## Required files in the repo (stack-agnostic)
@@ -50,6 +61,11 @@ Already in the template with `{{PLACEHOLDER}}` tokens — the setup skill fills 
 - `public/404.html`, `public/500.html`
 - `SECURITY.md`
 
+Also in the template:
+
+- `assets/` — drop zone for brand material (logo, photos, fonts); inventoried by the design skill before generation
+- `.claude/skills/launchgrade-design/master-prompt.md` — versioned quality prompt for single-HTML generation
+
 Not in the template (stack- or asset-specific, comes via skill or manually):
 
 - Favicons (SVG + 192/512/180 PNG) — brand asset, per project
@@ -58,7 +74,9 @@ Not in the template (stack- or asset-specific, comes via skill or manually):
 
 ## Build / test / audit
 
-If the user picked a JS stack, the stack adds its own scripts:
+Plain HTML (default): no build, no npm — open `index.html` (or serve `public/` after setup) in a browser.
+
+If the user picked a stack migration, the stack adds its own scripts:
 
 ```bash
 npm run dev          # local dev
@@ -106,8 +124,12 @@ The maintainer-only script `scripts/update-standards.sh` is pure bash, requires 
 
 ## Anti-patterns
 
-- ❌ Installing Node / nvm / npm packages on first invocation "just in case" — install on demand
+- ❌ Generating the draft before the material capture is confirmed complete — the hard gate exists because staged input produces mismatched results
+- ❌ Creating DESIGN.md or COPY.md — the single HTML is the design truth
+- ❌ Setup changing content, copy, or look — design fidelity rule
+- ❌ Installing Node / nvm / npm packages on first invocation "just in case" — tooling appears only on stack migration
 - ❌ Reciting standards from memory instead of reading `./web-standards/AGENTS.md`
+- ❌ Skipping the master prompt when generating the draft
 - ❌ Generic `robots.txt` without AI-crawler configuration
 - ❌ CSP with `unsafe-inline` without documented justification
 - ❌ Embedding Google Fonts via `fonts.googleapis.com`

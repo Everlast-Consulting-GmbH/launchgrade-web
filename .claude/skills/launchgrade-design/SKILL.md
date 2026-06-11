@@ -1,6 +1,6 @@
 ---
 name: launchgrade-design
-description: Phase 1 of the Launchgrade workflow — builds a lightweight, self-contained single-HTML draft as the visual ground truth of the site. Captures company info, references, and assets completely upfront (hard gate before generation), shows 3 style directions (user picks one), then generates index.html via the versioned master prompt (anti-slop, a11y hard constraints, static discipline). Writes project.config.json. No DESIGN.md/COPY.md — the HTML is the design truth. Triggers on "new website", "landing page", "design", "draft", "first draft", "look", "brand", "single HTML", "copy", "looks generic", "style guide", "neue Website", "Webseite erstellen", "Landing Page", "Entwurf", "erster Entwurf", "Design", "Anti-Slop", "sieht generisch aus", "Webseiten-Text".
+description: Phase 1 of the Launchgrade workflow — design-first single-HTML draft as the visual ground truth of the site. Captures company info, references, and assets completely upfront (hard gate before generation), shows 3 style directions (user picks one), asks motion tier (Static/Micro/Cinematic with full GSAP choreography) and asset art direction (abstract graphics vs. photoreal), then generates index.html via the versioned master prompt (anti-slop, structural a11y, reduced-motion gating). Compliance hardening (self-hosting swap, metas, CSP) is deferred to launchgrade-setup. Writes project.config.json. No DESIGN.md/COPY.md — the HTML is the design truth. Triggers on "new website", "landing page", "design", "draft", "first draft", "look", "brand", "single HTML", "copy", "looks generic", "style guide", "neue Website", "Webseite erstellen", "Landing Page", "Entwurf", "erster Entwurf", "Design", "Anti-Slop", "sieht generisch aus", "Webseiten-Text".
 ---
 
 # Launchgrade Web Design Skill
@@ -78,6 +78,8 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
      "lang": "de",
      "primary_color": { "hex": null, "oklch": null },
      "style_direction": null,
+     "motion_tier": null,
+     "asset_style": null,
      "domain": null,
      "bfsg_relevant": null,
      "stack": null,
@@ -87,7 +89,8 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    ```
 
    `primary_color.hex` + `primary_color.oklch` + `style_direction` werden nach
-   der Style-Wahl (Step 5) nachgetragen. `domain`, `bfsg_relevant`, `stack`,
+   der Style-Wahl (Step 5) nachgetragen, `motion_tier` + `asset_style` nach
+   Step 5b/5c. `domain`, `bfsg_relevant`, `stack`,
    `deploy_target` füllt Setup. Nicht erfasste Kontaktfelder bleiben `null` —
    nie erfinden. `standards_snapshot` mit dem echten Datei-Inhalt füllen
    (`cat web-standards/.snapshot-version`), nicht den Platzhalter übernehmen.
@@ -129,12 +132,36 @@ Audit / Pre-Launch-Check (→ `launchgrade-audit`), Backend-/Admin-Tasks.
    Danach `primary_color.hex` + `primary_color.oklch` und `style_direction`
    (Named Aesthetic) in `project.config.json` nachtragen.
 
+   **5b · Motion-Tier per `AskUserQuestion`** — PFLICHT:
+
+   - Question: *„Wie viel Motion soll der Draft bekommen?"*
+   - Options:
+     - *Static* — Layout, Typo, Farbe ohne JS-Motion (klassische Phase 1)
+     - *Micro* — CSS-Transitions, Hover-/Focus-Zustände, dezente CSS-Reveals
+     - *Cinematic* — volle Choreografie: GSAP + ScrollTrigger + Lenis,
+       Preloader, Line-Mask-Reveals, Scrub-Parallax, Marquee, Magnetic
+       Buttons, Custom Cursor, Count-Up-Stats (Rezept im Master-Prompt)
+   - Enthält das Briefing Wörter wie „cinematic", „premium", „Awwwards",
+     „wow": *Cinematic* als „(Empfohlen)" zuerst listen.
+
+   **5c · Asset-Art-Direction per `AskUserQuestion`** — PFLICHT, bevor
+   irgendein Asset generiert wird:
+
+   - Question: *„Welche Bildsprache für generierte Assets?"*
+   - Options:
+     - *Abstrakte Grafiken* — Fine-Art-Lichtformen in Brand-Palette
+       (Higgsfield `gpt_image_2`; Default bei Tier Cinematic)
+     - *Fotorealistisch* — Orte/Szenen ohne Personen (Higgsfield `soul_location`)
+     - *Nur eigenes Material* — ausschließlich Dateien aus `assets/`
+   - Danach `motion_tier` und `asset_style` in `project.config.json`
+     nachtragen. Generierungs-Rezept: Master-Prompt §Asset-Art-Direction.
+
 6. **Single HTML bauen — Master-Prompt ist Pflicht:**
 
    `.claude/skills/launchgrade-design/master-prompt.md` mit `Read` laden und
    ALLE Constraints daraus anwenden (Output-Konventionen, Anti-Slop, A11y,
-   Static-Disziplin, Copy-Regeln, Self-Check). Nie aus dem Gedächtnis.
-   Output: `index.html` im Repo-Root.
+   Motion-Tier, Asset-Art-Direction, Copy-Regeln, Self-Check). Nie aus dem
+   Gedächtnis. Output: `index.html` im Repo-Root.
 
 7. **Browser-Sichtprüfung + Iteration:** `index.html` nach jedem Build im
    Browser öffnen — Tool-Detection-Reihenfolge: `agent-browser open index.html`
@@ -164,9 +191,15 @@ Standards-Lookup: `./web-standards/AGENTS.md` im Repo (§1 HTML-Baseline, §3 A1
 - Material-Gate ist hart: ohne explizite „komplett"-Bestätigung keine Generierung.
 - Master-Prompt vor JEDER Generierung lesen — Qualität ist promptversioniert,
   nicht promptabhängig.
-- Bei Konflikt Brand vs. A11y: A11y gewinnt (web-standards §3).
-- Material-Gate, Style-Wahl und Hard Gate: alle via `AskUserQuestion`, nie
-  nummerierte Chat-Liste.
+- **Design-first:** Die Design-Phase ist kreativ, nicht compliance-getrieben.
+  Self-Hosting-Swap, Metas, CSP und Pflicht-Files macht `/launchgrade-setup`
+  als Retrofit ohne Pixel-Änderung. Im Draft sind Fontshare-/jsdelivr-CDNs
+  erlaubt (nie `fonts.googleapis.com`) — als Setup-TODO im Header notieren.
+- Struktur-A11y ist auch im Draft nicht verhandelbar (lang, ein h1, Landmarks,
+  alt, focus-visible, reduced-motion-Fallback) — sie kostet kein Design.
+  Kontrast ist im Draft Hinweis, die harte Prüfung macht `/launchgrade-audit`.
+- Material-Gate, Style-Wahl, Motion-Tier, Art-Direction und Hard Gate: alle
+  via `AskUserQuestion`, nie nummerierte Chat-Liste.
 - Fakten, die nirgends im Material stehen, NIE erfinden — `{{TODO: …}}`-Marker.
 - Auf Deutsch antworten, Code/Tokens/Commits auf Englisch.
 - Em-dashes in user-facing Copy sparsam.
@@ -180,7 +213,10 @@ Standards-Lookup: `./web-standards/AGENTS.md` im Repo (§1 HTML-Baseline, §3 A1
 - ❌ Master-Prompt überspringen oder aus dem Gedächtnis paraphrasieren.
 - ❌ „Modern, clean, minimalistisch" als Style-Beschreibung — bedeutungsleer.
 - ❌ Inter als Default-Font, Lila-Gradients, Tailwind-Slate ohne Override.
-- ❌ JS-Motion-Layer im Draft (IntersectionObserver, Scroll-Reveals).
+- ❌ Cinematic-Briefing („Awwwards", „premium", „wow") mit Static-Zurückhaltung
+  beantworten — gewähltes Motion-Tier voll ausspielen.
+- ❌ Motion ohne `prefers-reduced-motion`-Bail-out oder mit Inhalten, die ohne
+  JS unsichtbar bleiben.
 - ❌ Google Fonts via `fonts.googleapis.com` einbinden.
 - ❌ Daten erfinden (Telefon, Adresse, Preise, Termine).
 - ❌ Stillschweigend zu Setup/Audit weitergehen — Hard Gate ist Pflicht.
@@ -188,14 +224,13 @@ Standards-Lookup: `./web-standards/AGENTS.md` im Repo (§1 HTML-Baseline, §3 A1
 
 ## Übergabe
 
-- `index.html` im Repo-Root — self-contained, Phase 1 Static, verbleibende
-  `{{TODO: …}}`-Marker explizit gelistet.
+- `index.html` im Repo-Root — im gewählten Motion-Tier, verbleibende
+  `{{TODO: …}}`-Marker und Setup-TODOs (CDN-Swaps) explizit gelistet.
 - `project.config.json` mit Brand-Teil gefüllt, Technik-Felder `null`.
 - `assets/` referenziert, Style-Picker bleibt unter `.launchgrade/mockups/`
   liegen (gitignored, visuelle Ground-Truth der Wahl).
-- Micro-Interactions und Motion-Layer sind bewusst nicht Teil des Drafts.
-  Reihenfolge nach Freigabe: Static → Micro (Hover/Focus/Form-States) →
-  Motion (Scroll/Reveals), `prefers-reduced-motion`-Fallback Pflicht
+- Motion-Umfang folgt dem gewählten Tier (Static / Micro / Cinematic);
+  `prefers-reduced-motion`-Fallback ist in jedem Tier Pflicht
   (web-standards §9).
 - Nächste Phase: `/launchgrade-setup` (Pflicht-Files, Stack-Wahl, CSP) —
   optional, wenn die Seite produktiv werden soll. Danach `/launchgrade-audit`.

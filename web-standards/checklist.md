@@ -72,6 +72,11 @@ Kompakte Version der Pflicht-Anforderungen aus [AGENTS.md](./AGENTS.md). Jeder o
 
 - [ ] `<title>` eindeutig pro Seite (~50–60 Zeichen, Pixel-Breite zählt — SHOULD)
 - [ ] `<meta name="description">` eindeutig pro Seite (~120–160 Zeichen — SHOULD)
+- [ ] Jede indexierbare Seite hat ein Primary Keyword und eine klare Suchintention
+- [ ] Wichtige Seiten sind in `seo/strategy.md` gemappt
+- [ ] Keine zwei Seiten bedienen dieselbe Suchintention ohne klare Abgrenzung
+- [ ] Kommerzielle Seiten haben passenden CTA und interne Links zu relevanten Cluster-/Pillar-Seiten
+- [ ] Blog-/Ratgeberseiten wurden gegen `seo/brief-template.md` geplant oder geprüft
 - [ ] `<link rel="canonical">` pro Seite, selbst-referenzierend, absolute URL
 - [ ] Open Graph komplett: og:title, og:description, og:url, og:type, og:locale, og:image (1200×630), og:image:width/height/alt
 - [ ] X Card (vormals Twitter Card): `twitter:card="summary_large_image"` + Title/Description/Image

@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Stack-agnostic starter template + technical baseline for modern web projects (2026 edition). Single-HTML-first: the first phase produces a self-contained `index.html` draft as the visual ground truth, before any stack decision. Compliance-grade defaults for EU markets (BFSG / GDPR / TDDDG), Core Web Vitals, security headers, AI-crawler policy, and anti-slop design hygiene. Operationalized as three Claude Code skills.
+Stack-agnostic starter template + technical baseline for modern web projects (2026 edition). Single-HTML-first: the first phase produces a self-contained `index.html` draft as the visual ground truth, before any stack decision. Compliance-grade defaults for EU markets (BFSG / GDPR / TDDDG), Core Web Vitals, security headers, AI-crawler policy, and anti-slop design hygiene. Operationalized as four Claude Code skills.
 
 > The standards documentation in `web-standards/` is intentionally in German — it cites German/EU legal frameworks (BFSG, DDG, TDDDG, MStV, ECJ rulings) where translation would lose legal precision. Tech terms (WCAG, CWV, CSP, JSON-LD) are English throughout, so most of the document is readable without German.
 
@@ -28,11 +28,13 @@ That's it. No Node, no nvm, no global CLIs. The draft is a single HTML file that
 ## What's inside
 
 - **Launchgrade Web Standards 2026** (`web-standards/AGENTS.md` + `checklist.md`) — versioned baseline covering Performance (Core Web Vitals 2026), Accessibility (WCAG 2.2 AA + BFSG), SEO (classic + AI-crawler era), Security (CSP, headers, cookies, auth), Privacy (GDPR / TDDDG), Motion, PWA. RFC-2119 levels (MUST / Conditional MUST / SHOULD / MAY).
-- **Three Claude Code skills** (`.claude/skills/`) — Draft → Shape → Audit:
+- **Four Claude Code skills** (`.claude/skills/`) — Draft → SEO → Shape → Audit:
   - `launchgrade-design` — phase 1: captures material with a hard gate, 3 style directions, generates the single-HTML draft via the versioned master prompt (`master-prompt.md`). The HTML is the design truth — no DESIGN.md.
-  - `launchgrade-setup` — phase 2 (optional): brings the approved draft into production shape — stack choice (plain HTML default, or migration with visual parity check), required files, CSP, head metas, JSON-LD. Never changes content or look.
-  - `launchgrade-audit` — phase 3: pre-/post-launch via PageSpeed Insights + Mozilla Observatory (web-based, zero install); Lighthouse CLI optional
+  - `launchgrade-seo` — optional content/keyword layer: keyword map, page map, content roadmap, and briefs without APIs or paid-tool assumptions.
+  - `launchgrade-setup` — setup phase (optional): brings the approved draft into production shape — stack choice (plain HTML default, or migration with visual parity check), required files, CSP, head metas, JSON-LD. Never changes content or look.
+  - `launchgrade-audit` — final phase: pre-/post-launch via PageSpeed Insights + Mozilla Observatory (web-based, zero install); Lighthouse CLI optional
 - **Asset drop zone** (`assets/`) — logo, photos, fonts; inventoried before generation
+- **Lightweight SEO workspace** (`seo/`) — optional 80/20 strategy file and content brief template for keyword-aware pages and blog articles
 - **Required files** in `public/` with `{{PLACEHOLDER}}` tokens (robots.txt, sitemap.xml, llms.txt, .well-known/security.txt, site.webmanifest, 404/500)
 - **Claude Code settings** (`.claude/settings.json`) — permission allowlist for audit tooling, deny rules against force push and publish
 
@@ -41,9 +43,11 @@ That's it. No Node, no nvm, no global CLIs. The draft is a single HTML file that
 ```
 1. /launchgrade-design   →  material capture (hard gate) → 3 style directions
                             → single-HTML draft (index.html) + project.config.json
-2. /launchgrade-setup    →  optional: stack choice (plain HTML default, or
+2. /launchgrade-seo      →  optional: keyword map, page map, content roadmap,
+                            and content briefs for SEO pages or blog articles
+3. /launchgrade-setup    →  optional: stack choice (plain HTML default, or
                             migration), required files, CSP, metas, JSON-LD
-3. /launchgrade-audit    →  pre-launch (PageSpeed Insights + Observatory),
+4. /launchgrade-audit    →  pre-launch (PageSpeed Insights + Observatory),
                             findings as Blockers / Recommended / Nice-to-have
 ```
 
@@ -68,7 +72,7 @@ If you really want to work without an agent: clone the repo, build your own `ind
 
 ## Stack choice
 
-See [`docs/STACK_CHOICE.md`](docs/STACK_CHOICE.md) — decision matrix for marketing site / blog / shop / SaaS marketing. The stack decision happens in phase 2 (`launchgrade-setup`), after the single-HTML draft exists. Plain HTML is the default.
+See [`docs/STACK_CHOICE.md`](docs/STACK_CHOICE.md) — decision matrix for marketing site / blog / shop / SaaS marketing. The stack decision happens in the setup phase (`launchgrade-setup`), after the single-HTML draft exists. Plain HTML is the default.
 
 ## Contributing
 

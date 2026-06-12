@@ -8,7 +8,7 @@ The technical web baseline lives in `./web-standards/AGENTS.md` (snapshot of the
 
 **Nothing.** The template itself is static files (`public/*`), an asset drop zone (`assets/`), docs (`AGENTS.md`, `web-standards/`), and Claude Code skills. There is no build step, no install step, no runtime. Phase 1 produces a single HTML file that opens in any browser.
 
-Runtime dependencies only appear if the user later chooses a stack migration in phase 2 — and the agent handles them then, not upfront.
+Runtime dependencies only appear if the user later chooses a stack migration in setup — and the agent handles them then, not upfront.
 
 ## Bootstrap (read this first on a fresh clone)
 
@@ -17,24 +17,27 @@ When invoked in a fresh template clone (or after the user clicks GitHub's "Use t
 1. **Detect context.** Is this a fresh clone? `project.config.json` at root is the authoritative marker: absent → fresh clone. (`index.html` alone is not reliable — after the plain-HTML setup path it moves to `public/`, while `project.config.json` stays at root.)
 2. **Do nothing eagerly.** Do not install Node, do not run `npm install`, do not install global CLIs. Phase 1 needs only a browser.
 3. **Trigger `/launchgrade-design`.** That skill captures company info, references, and the `assets/` folder completely (hard gate before generation), shows 3 style directions, then generates the single-HTML draft (`index.html`) via the versioned master prompt. It also writes `project.config.json`.
-4. **Install on demand, not upfront.** Tooling appears only when a later user choice requires it:
+4. **Use `/launchgrade-seo` only when SEO strategy/content is requested.** It fills the lightweight `seo/` workspace for keyword maps, page maps, roadmaps, and briefs. It does not add APIs, scraping, rank tracking, or paid-tool assumptions.
+5. **Install on demand, not upfront.** Tooling appears only when a later user choice requires it:
    - Picks a stack migration in `/launchgrade-setup` (Astro / Next / SvelteKit / Nuxt) → Node 20+ required for scaffold. If no Node, detect platform and recommend the simplest installer (`fnm`, `volta`, or system installer — not `nvm` as a hard requirement).
    - Wants local Lighthouse audit → use `npx lighthouse` (no global install needed).
    - BFSG-relevant + wants local a11y CLI → `npx @axe-core/cli`.
    - Otherwise audit runs against the live URL via PageSpeed Insights API + Mozilla Observatory (both web-based, no install).
 
-## Workflow (three phases, three skills)
+## Workflow (four skills)
 
 ```
 1. /launchgrade-design   →  capture material completely (hard gate) → 3 style
                             directions (user picks) → single-HTML draft
                             (index.html) via versioned master prompt
                             + project.config.json
-2. /launchgrade-setup    →  optional "bring into shape": stack choice (plain
+2. /launchgrade-seo      →  optional SEO strategy/content layer: keyword map,
+                            page map, content roadmap, and content briefs
+3. /launchgrade-setup    →  optional "bring into shape": stack choice (plain
                             HTML default, or migration to Astro/Next/SvelteKit/
                             Nuxt with visual parity check), required files,
                             CSP/headers, head metas, JSON-LD
-3. /launchgrade-audit    →  before every release (PageSpeed Insights + Mozilla
+4. /launchgrade-audit    →  before every release (PageSpeed Insights + Mozilla
                             Observatory; Lighthouse CLI optional)
 ```
 
@@ -43,9 +46,15 @@ Two rules hold the workflow together:
 - **The single HTML is the design truth.** There is no DESIGN.md or COPY.md — the `:root` token block and the comment header inside `index.html` carry brand DNA, palette, and typography.
 - **Setup never changes content or look** (design fidelity). Design/copy changes always go back through `/launchgrade-design`.
 
+Tooling note: Claude Code loads `.claude/skills/` natively. Other coding agents
+such as Codex or Cursor should treat the matching
+`.claude/skills/<skill-name>/SKILL.md` file as the authoritative workflow doc
+when the trigger below applies.
+
 ## When does what trigger
 
 - **New website, new page, draft, design, copy, "looks generic", brand refactor** → `launchgrade-design`
+- **SEO strategy, keyword map, content roadmap, blog/article brief, Search Console export** → `launchgrade-seo`
 - **"Bring into shape", go live, stack choice/migration, robots.txt, CSP, manifest, security.txt, favicons, deploy** → `launchgrade-setup`
 - **URL given + "audit" / "Lighthouse" / "pre-launch"** → `launchgrade-audit`
 

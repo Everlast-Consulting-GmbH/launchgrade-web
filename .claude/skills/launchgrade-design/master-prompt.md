@@ -32,6 +32,8 @@ weil sie beim Schreiben des HTML nichts kostet und beim Nachrüsten teuer ist.
 
   ```html
   <!--
+    SPDX-License-Identifier: LicenseRef-Everlast-Proprietary
+    © <Jahr> Everlast Consulting GmbH — Alle Rechte vorbehalten. Proprietär.
     Brand-DNA: <3-5 Adjektive die die Brand IST> | NICHT: <3-5 Adjektive>
     Named Aesthetic: <konkret, z.B. "Editorial Serif nach Mr-Porter-Vorbild">
     Style-Direktion: <Variante A/B/C aus dem Style-Picker>

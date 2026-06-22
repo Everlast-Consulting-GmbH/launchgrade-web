@@ -1,6 +1,6 @@
 # Launchgrade — Web Standards 2026
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
 Stack-agnostic starter template + technical baseline for modern web projects (2026 edition). Single-HTML-first: the first phase produces a self-contained `index.html` draft as the visual ground truth, before any stack decision. Compliance-grade defaults for EU markets (BFSG / GDPR / TDDDG), Core Web Vitals, security headers, AI-crawler policy, and anti-slop design hygiene. Operationalized as four Claude Code skills.
 
@@ -76,7 +76,7 @@ See [`docs/STACK_CHOICE.md`](docs/STACK_CHOICE.md) — decision matrix for marke
 
 ## Contributing
 
-Issues and pull requests welcome. For larger changes, please open an issue first. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for branch conventions and commit style.
+This is proprietary software. Contributions are limited to Everlast Consulting GmbH and authorized contributors. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for branch conventions and commit style.
 
 ## Maintenance
 
@@ -86,4 +86,7 @@ Best-effort maintenance. No SLA, no warranty — see [`LICENSE`](LICENSE). Stand
 
 ## License
 
-[MIT](LICENSE) © Everlast Consulting GmbH
+© 2026 Everlast Consulting GmbH — All rights reserved. Proprietary software.
+Use is permitted only for Everlast customers, solely for their own internal
+purposes under a separate agreement. No redistribution, no resale, no provision
+to third parties. See [`LICENSE`](LICENSE).

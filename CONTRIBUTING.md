@@ -1,5 +1,7 @@
 # Contributing
 
+This is proprietary software (see [`LICENSE`](LICENSE)). These conventions apply to Everlast Consulting GmbH and authorized contributors, not to the general public.
+
 Lean conventions for solo / small-team repos — no enforcement layer, no CI, AI handles format and style.
 
 ## Branches
